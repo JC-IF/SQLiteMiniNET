@@ -1,6 +1,6 @@
 # SQLiteMini
 
-SQLiteMini is a minimalist .NET cross-platform wrapper around the SQLite3 C library.
+SQLiteMini is a minimalist .NET cross-platform wrapper around the SQLite3 C library (downloaded from official sqlite.org)
 
 All the source code is a single and small C# file with no additional DLLs, no compiler unsafe flag required, compatible with all modern .NET versions and all operating systems supported by both sqlite and .NET runtime.
 You can include it directly in your project or also build as a separate DLL (~10KB).
