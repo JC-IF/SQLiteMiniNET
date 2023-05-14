@@ -1,6 +1,6 @@
 # SQLiteMini
 
-SQLiteMini is a minimalist .NET cross-platform wrapper around the SQLite3 C library (downloaded from official sqlite.org)
+SQLiteMini is a minimal .NET cross-platform wrapper around the SQLite3 C library (downloaded from official sqlite.org)
 
 All the source code is a single and small C# file with no additional DLLs, no compiler unsafe flag required, compatible with all modern .NET versions and all operating systems supported by both sqlite and .NET runtime.
 You can include it directly in your project or also build as a separate DLL (~10KB).
@@ -22,17 +22,18 @@ Faster UTF-8 string marshaling:
 
 ## Usage example
 
-```
-using System;
+```C#
 using SQLiteMiniNET;
 
 // ...
 
 using (var db = new SQLiteMini("citydb_file_name.sqlite", SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
 {
+    // CREATE TABLE example
     var createQuery = "CREATE TABLE cities (id INTEGER, name TEXT, population INTEGER, latitude REAL, longitude REAL, image BLOB, PRIMARY KEY(id AUTOINCREMENT));";
     db.Exec(createQuery);
 
+    // INSERT example
     var insertQuery = "INSERT INTO cities (name, population, latitude, longitude, image) VALUES (:name, :population, :latitude, :longitude);";
     var bindings = db.CreateBindings(storeExpandedSql: true);
     bindings.Bind(":name", "Rome");
@@ -42,15 +43,18 @@ using (var db = new SQLiteMini("citydb_file_name.sqlite", SQLiteOpenFlags.Create
     //bindings.Bind(":image", File.ReadAllBytes("rome_thumbnail.jpg"));
     db.Exec(insertQuery, bindings);
 
+    // You can retrieve the expanded query with bound parameters after execution
     Console.WriteLine("OK. Executed SQL: " + bindings.ExpandedSQL);
     bindings.Reset();
 
+    // SELECT example
     var selectQuery = "SELECT * FROM cities WHERE population > ?;";
     bindings.Bind(1, 123456);
     db.Query(
         sql: selectQuery,
         bindings: bindings,
-        tag: null,
+        // optional row.tag value:
+        // tag: myObject,
         handler: (row) =>
         {
             var name = row.Get<string>("name");
@@ -58,7 +62,7 @@ using (var db = new SQLiteMini("citydb_file_name.sqlite", SQLiteOpenFlags.Create
             var longitude = row.Get<double>("longitude");
             var photo = row.Get<byte[]>("image_blob");
 
-            // Cast and use row.tag object or use captured variable to store the information for later use
+            // Cast and use row.tag object or use captured variable to store contextual info for later use
             Console.WriteLine("Found city: " + name);
 
             return true; // return false to interrupt the query (no further rows processing is needed)
